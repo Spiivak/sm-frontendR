@@ -68,10 +68,6 @@
 // Buttons
 
 
-$primary-color: #EA1A5B;
-$secondary-color: #F48120;
-
-// Mixin for button style
 @mixin button-style($button-type, $button-size, $button-color) {
   // Shared styles for all button types
   display: inline-flex;
@@ -85,50 +81,47 @@ $secondary-color: #F48120;
 
   // Size options
   @if $button-size == 'small' {
-    padding: 4px;
+    padding: 2px;
     font-size: 0.75rem;
   } @else if $button-size == 'medium' {
-    padding: 8px;
+    padding: 4px;
     font-size: 1rem;
   } @else if $button-size == 'large' {
-    padding: 12px;
+    padding: 6px;
     font-size: 1.25rem;
   }
 
   // Set color variables based on button color
   $bg-color: null;
-  $text-color: #fff;
+  $text-color: $text-clr;
 
   @if $button-color == 'primary' {
-    $bg-color: $primary-color;
+    $bg-color: $secondary-clr;
   } @else if $button-color == 'secondary' {
-    $bg-color: $secondary-color;
+    $bg-color: $secondary-clr;
   } @else if $button-color == 'transparent' {
     $bg-color: transparent;
-    $text-color: $primary-color;
   }
 
   // Style variations based on button type
   @if $button-type == 'icon' {
+    background-color: $bg-color;
+    color: $text-clr;
     border-radius: 5000px;
-    height: 32px;
-    // border: none;
-    // outline: none;
-    background-color: transparent;
-    color: $text-color;
   } @else if $button-type == 'text' {
     background-color: transparent;
-    color: $bg-color;
+    color: $text-clr;
   } @else if $button-type == 'contained' {
     background-color: $bg-color;
-    color: $text-color;
+    color: $text-clr;
   }
 
   // Common hover effect (wave)
   &:hover::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: 0;// Mixin for button style
+
     left: 0;
     width: 100%;
     height: 100%;
