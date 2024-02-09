@@ -6,65 +6,23 @@
     flex-direction: column;
   }
 
-  &.row-reverse {
-    flex-direction: row-reverse;
+  &.wrap {
+    flex-wrap: wrap;
   }
 
-  &.column-reverse {
-    flex-direction: column-reverse;
+  &.align-center {
+    align-items: center;
   }
 
-  &.justify-start {
-    justify-content: flex-start;
+  &.justify-center {
+    justify-content: center;
   }
 
-  &.justify-end {
-    justify-content: flex-end;
+  &.space-between {
+    justify-content: space-between;
   }
 
-  &.align-start {
-    align-items: flex-start;
-  }
 
-  &.align-end {
-    align-items: flex-end;
-  }
-
-  &.align-stretch {
-    align-items: stretch;
-  }
-
-  &.align-baseline {
-    align-items: baseline;
-  }
-
-  &.align-content-start {
-    align-content: flex-start;
-  }
-
-  &.align-content-end {
-    align-content: flex-end;
-  }
-
-  &.align-content-center {
-    align-content: center;
-  }
-
-  &.align-content-space-between {
-    align-content: space-between;
-  }
-
-  &.align-content-space-around {
-    align-content: space-around;
-  }
-
-  &.align-content-stretch {
-    align-content: stretch;
-  }
-
-  &.wrap-reverse {
-    flex-wrap: wrap-reverse;
-  }
   .gap16 {
     gap: 16px;
   }
