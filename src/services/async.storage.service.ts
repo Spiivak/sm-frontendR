@@ -1,4 +1,4 @@
-import { Item } from "./item.service"
+import { Item } from "./shift.service"
 
 export interface Entity {
   _id: string
