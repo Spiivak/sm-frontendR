@@ -1,0 +1,30 @@
+.app-header {
+  .add-shift {
+    color: $primary-clr;
+  }
+
+
+  .job-preview {
+    margin-top: 16px;
+
+    button {
+      background-color: transparent;
+      color: $primary-clr;
+    }
+
+    .job-details {
+      h2 {
+        color: $primary-clr;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      p {
+        color: $text-clr;
+        font-size: 14px;
+      }
+
+    }
+  }
+
+}
