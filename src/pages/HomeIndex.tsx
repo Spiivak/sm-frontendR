@@ -1,8 +1,11 @@
+import AppHeader from "../cmps/AppHeader";
 
 export function HomeIndex() {
   return (
-    <section>
-      <h1>Home Index</h1>
+    <section className="shifts-index main-layout index">
+      <AppHeader />
+      <main>
+      </main>
     </section>
   )
 }
