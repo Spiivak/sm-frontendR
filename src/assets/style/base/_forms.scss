@@ -1,0 +1,113 @@
+// FORMS.SCSS
+
+/* Form Containers */
+.form-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+}
+
+// Icon Button
+.btn-icon.small-transparent {
+  @include button-style('icon', 'small', 'transparent');
+}
+
+.btn-icon.small-primary {
+  @include button-style('icon', 'small', 'primary');
+}
+
+.btn-icon.medium-primary {
+  @include button-style('icon', 'medium', 'primary');
+}
+
+.btn-icon.large-primary {
+  @include button-style('icon', 'large', 'primary');
+}
+
+.btn-icon.small-sec {
+  @include button-style('icon', 'small', 'secondary');
+}
+
+.btn-icon.medium-sec {
+  @include button-style('icon', 'medium', 'secondary');
+}
+
+.btn-icon.large-sec {
+  @include button-style('icon', 'large', 'secondary');
+}
+
+
+// Text Button
+.btn-txt.small-primary {
+  @include button-style('text', 'small', 'primary');
+}
+
+.btn-txt.medium-primary {
+  @include button-style('text', 'medium', 'primary');
+}
+
+.btn-txt.large-primary {
+  @include button-style('text', 'large', 'primary');
+}
+
+.btn-txt.small-sec {
+  @include button-style('text', 'small', 'secondary');
+}
+
+.btn-txt.medium-sec {
+  @include button-style('text', 'medium', 'secondary');
+}
+
+.btn-txt.large-sec {
+  @include button-style('text', 'large', 'secondary');
+}
+
+// Contained Button
+.btn-ctn.small-primary {
+  @include button-style('contained', 'small', 'primary');
+}
+
+.btn-ctn.medium-primary {
+  @include button-style('contained', 'medium', 'primary');
+}
+
+.btn-ctn.large-primary {
+  @include button-style('contained', 'large', 'primary');
+}
+
+.btn-ctn.small-sec {
+  @include button-style('contained', 'small', 'secondary');
+}
+
+.btn-ctn.medium-sec {
+  @include button-style('contained', 'medium', 'secondary');
+}
+
+.btn-ctn.large-sec {
+  @include button-style('contained', 'large', 'secondary');
+}

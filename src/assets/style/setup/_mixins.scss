@@ -1,0 +1,183 @@
+/* Media queries Breakpoint mixins */
+
+@mixin for-mobile-layout {
+  @media (max-width: $break-narrow) {
+    @content;
+  }
+}
+
+@mixin for-narrow-layout {
+  @media (min-width: $break-narrow) {
+    @content;
+  }
+}
+
+@mixin for-normal-layout {
+  @media (min-width: $break-normal) {
+    @content;
+  }
+}
+
+@mixin for-wide-layout {
+  @media (min-width: $break-wide) {
+    @content;
+  }
+}
+
+@mixin layoutGTC($max) {
+  grid-template-columns:
+    minmax($layoutPadding, 1fr)
+    minmax(auto, $max)
+    minmax($layoutPadding, 1fr);
+}
+
+/* Media  Mixins */
+
+//aspect ratio mixin
+@mixin aspect-ratio($width: 1, $height: 1) {
+  position: relative;
+  overflow: hidden;
+  &:before {
+    content: "";
+    display: block;
+    width: 100%;
+    padding-top: calc(($height / $width) * 100%);
+  }
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  > img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// Mixin for removing hover efects on iphone screen
+@mixin hover-supported {
+  @media not all and (pointer: coarse) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+// Buttons
+
+
+$primary-color: #EA1A5B;
+$secondary-color: #F48120;
+
+// Mixin for button style
+@mixin button-style($button-type, $button-size, $button-color) {
+  // Shared styles for all button types
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative; // Needed for the wave effect
+  transition: background-color 0.3s ease; // Transition for the background-color
+
+  // Size options
+  @if $button-size == 'small' {
+    padding: 4px;
+    font-size: 0.75rem;
+  } @else if $button-size == 'medium' {
+    padding: 8px;
+    font-size: 1rem;
+  } @else if $button-size == 'large' {
+    padding: 12px;
+    font-size: 1.25rem;
+  }
+
+  // Set color variables based on button color
+  $bg-color: null;
+  $text-color: #fff;
+
+  @if $button-color == 'primary' {
+    $bg-color: $primary-color;
+  } @else if $button-color == 'secondary' {
+    $bg-color: $secondary-color;
+  } @else if $button-color == 'transparent' {
+    $bg-color: transparent;
+    $text-color: $primary-color;
+  }
+
+  // Style variations based on button type
+  @if $button-type == 'icon' {
+    border-radius: 5000px;
+    height: 32px;
+    // border: none;
+    // outline: none;
+    background-color: transparent;
+    color: $text-color;
+  } @else if $button-type == 'text' {
+    background-color: transparent;
+    color: $bg-color;
+  } @else if $button-type == 'contained' {
+    background-color: $bg-color;
+    color: $text-color;
+  }
+
+  // Common hover effect (wave)
+  &:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.3); // Adjust as needed
+    border-radius: inherit;
+    pointer-events: none;
+    animation: wave-effect 0.8s forwards;
+  }
+
+  // Click effect (additional small wave)
+  &:active::before {
+    animation: click-wave 0.3s;
+  }
+
+  // Specific hover effect for text buttons
+  @if $button-type == 'text' {
+    &:hover {
+      background-color: lighten($bg-color, 40%);
+    }
+  }
+
+  // Specific hover effect for icon buttons
+  @if $button-type == 'icon' {
+    &:hover {
+      background-color: darken($bg-color, 10%);
+    }
+  }
+
+  // Specific hover effect for contained buttons
+  @if $button-type == 'contained' {
+    &:hover {
+      background-color: darken($bg-color, 10%);
+    }
+  }
+}
+
+// Animation for the wave effect
+@keyframes wave-effect {
+  to {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+  from {}
+}
+
+// Animation for the click wave effect
+@keyframes click-wave {
+  to {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+}
