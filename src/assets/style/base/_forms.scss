@@ -61,6 +61,18 @@ select {
   @include button-style('icon', 'large', 'secondary');
 }
 
+.btn-icon.small-transparent {
+  @include button-style('icon', 'small', 'transparent');
+}
+
+.btn-icon.medium-transparent {
+  @include button-style('icon', 'medium', 'transparent');
+}
+
+.btn-icon.large-transparent {
+  @include button-style('icon', 'large', 'transparent');
+}
+
 
 // Text Button
 .btn-txt.small-primary {
@@ -85,6 +97,18 @@ select {
 
 .btn-txt.large-sec {
   @include button-style('text', 'large', 'secondary');
+}
+
+.btn-txt.small-transparent {
+  @include button-style('text', 'small', 'transparent');
+}
+
+.btn-txt.medium-transparent {
+  @include button-style('text', 'medium', 'transparent');
+}
+
+.btn-txt.large-transparent {
+  @include button-style('text', 'large', 'transparent');
 }
 
 // Contained Button
