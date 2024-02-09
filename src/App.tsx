@@ -1,7 +1,7 @@
 import { Provider } from 'react-redux'
 import { Route, Routes, BrowserRouter as Router } from 'react-router-dom'
 import { store } from './store/store'
-import { HomeIndex } from './pages/HomeIndex'
+import { ShiftIndex } from './pages/ShiftIndex'
 
 // import './App.css'
 
@@ -12,7 +12,7 @@ export function App() {
       <Provider store={store}>
         <Router>
           <Routes>
-            <Route path="/" element={<HomeIndex />} />
+            <Route path="/" element={<ShiftIndex />} />
           </Routes>
         </Router>
       </Provider>
