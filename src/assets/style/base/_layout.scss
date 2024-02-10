@@ -1,10 +1,7 @@
 #root {
   display: grid;
   grid-template-columns: 1fr 430px 1fr; /* Adjusted min and max values for responsiveness */
-  width: 100vw;
-  height: 100vh;
   .index {
-    padding: 16px;
     border: 1px solid white;
     grid-column: 2;
   }
