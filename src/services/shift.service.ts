@@ -59,6 +59,7 @@ function getEmptyShift(): Shift {
       to: 0,
     },
     rate: 0,
+    hourlyRate: 0,
     tip: 0,
     removal: 0,
     note: '',
@@ -101,7 +102,8 @@ function _createShift(options: Partial<Shift>): Shift {
     _id: options._id || utilService.makeId(),
     date: options.date || { from: 0, to: 0 },
     time: options.time || { from: 0, to: 0 },
-    rate: options.rate || 0,
+    hourlyRate: options.hourlyRate || 29.96,
+    rate: options.rate || 100,
     tip: options.tip || 0,
     removal: options.removal || 0,
     note: options.note || '',
@@ -128,15 +130,16 @@ interface ShiftSickness {
 }
 
 export interface Shift {
-  _id: string,
-  date: DateRange;
-  time: TimeRange;
-  rate: number;
-  tip: number;
-  removal: number;
-  note: string;
-  shiftOff?: ShiftLeave;
-  shiftSick?: ShiftSickness;
+  _id: string
+  date: DateRange
+  time: TimeRange
+  rate: number
+  hourlyRate: number
+  tip: number
+  removal: number
+  note: string
+  shiftOff?: ShiftLeave
+  shiftSick?: ShiftSickness
 }
 
 interface Job {
