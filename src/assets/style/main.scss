@@ -17,4 +17,10 @@
 
 
 // CMPS => Shift
-@import 'cmps/shift/ShiftPreview'
+@import 'cmps/shift/ShiftPreview';
+@import 'cmps/shift/UpdateShiftHeader.scss';
+@import 'cmps/shift/AddShift.scss';
+
+
+// PAGES 
+@import 'pages/UpdateShift';

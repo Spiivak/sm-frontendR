@@ -1,0 +1,16 @@
+.new-shift {
+  background-color: $main-app;
+
+  .actions {
+    .action {
+      padding: 24px 16px;
+      color: $text-clr;
+      min-height: 88px;
+
+      svg {
+        color: $primary-clr;
+      }
+
+    }
+  }
+}

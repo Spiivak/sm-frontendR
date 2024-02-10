@@ -1,0 +1,21 @@
+.update-shift-index {
+  // background-color: black;
+  margin-top: 32px;
+  
+  
+  header {
+    position: relative;
+    &::before {
+      content: "";
+      width: 400px;
+      position: absolute;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      background-color: darken(#25282E, 10%);
+      height: 7px;
+      top: -7px;
+      align-self: center;
+      justify-self: center;
+    }
+  }
+}
