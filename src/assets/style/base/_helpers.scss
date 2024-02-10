@@ -18,16 +18,24 @@
     justify-content: center;
   }
 
+  &.justify-start {
+    justify-content: start;
+  }
+
+  &.justify-end {
+    justify-content: end;
+  }
+
   &.space-between {
     justify-content: space-between;
   }
 
 
-  .gap16 {
+  &.gap16 {
     gap: 16px;
   }
 
-  .gap8 {
+  &.gap8 {
     gap: 8px;
   }
 }

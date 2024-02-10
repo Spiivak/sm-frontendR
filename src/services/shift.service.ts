@@ -56,12 +56,16 @@ function getEmptyShift(): Shift {
   return {
     _id: '',
     date: {
-      from: 0,
-      to: 0,
+      from: Date.now(),
+      to: Date.now(),
     },
-    times: [],
-    rate: 0,
-    hourlyRate: 0,
+    times: [
+     { from: Date.now(),
+      to: Date.now(),
+      rate: 100,}
+    ],
+    rate: 100,
+    hourlyRate: 29.96,
     tip: 0,
     removal: 0,
     note: '',

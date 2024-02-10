@@ -1,6 +1,23 @@
+import { NavLink, useNavigate } from 'react-router-dom'
 import { ArrowLeftIcon, ArrowRightIcon, PlusIcon, ShareIcon } from './Icons'
+import { shiftService } from '../services/shift.service'
 
 export default function AppHeader() {
+  const navigate = useNavigate()
+
+  const handleNavigate = async () => {
+    try {
+      const shift = await shiftService.getEmptyShift();
+      const savedShift = await shiftService.save(shift)
+      console.log('handleNavigate  shift:', shift)
+      const shiftId = savedShift._id;
+      console.log('handleNavigate  shiftId:', shiftId)
+      navigate(`/${shiftId}/edit`);
+    } catch (error) {
+      console.error('Error occurred while getting shift ID:', error);
+    }
+  }
+
   return (
     <header className='app-header'>
       <nav className="flex space-between">
@@ -9,9 +26,17 @@ export default function AppHeader() {
           <button className='btn-icon medium-transparent share-icon'><ShareIcon /></button>
           <button className="btn-txt medium-transparent">Edit</button>
         </div>
+
         <div className="flex align-center">
-          <button className='btn-icon medium-sec add-shift'><PlusIcon /></button>
+          <button
+            // to={`/${shiftId}/edit`}
+            className='btn-icon medium-sec add-shift'
+            onClick={handleNavigate}
+          >
+            <PlusIcon />
+          </button>
         </div>
+
       </nav>
 
       <div className="job-preview flex align-center space-between">
