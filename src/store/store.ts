@@ -3,7 +3,7 @@ import {
   compose,
   legacy_createStore as createStore,
 } from 'redux'
-import { shiftReducer } from './actions/shift.action';
+import { shiftReducer } from './reducers/shift.reducer';
 
 // import { selectedTaskReducer } from './reducers/selected-task.reducer'
 

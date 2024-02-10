@@ -1,14 +1,14 @@
-import { Item } from "./shift.service"
+import { Shift } from "./shift.service"
 
 export interface Entity {
   _id: string
 }
 
 export interface StorageService {
-  query(entityType: string, delay?: number): Promise<Item[]>
-  get(entityType: string, entityId: string): Promise<Item>
-  post(entityType: string, newEntity: Item): Promise<Item>
-  put(entityType: string, updatedEntity: Item): Promise<Item>
+  query(entityType: string, delay?: number): Promise<Shift[]>
+  get(entityType: string, entityId: string): Promise<Shift>
+  post(entityType: string, newEntity: Shift): Promise<Shift>
+  put(entityType: string, updatedEntity: Shift): Promise<Shift>
   remove(entityType: string, entityId: string): Promise<void>
 }
 
@@ -20,12 +20,12 @@ export const storageService: StorageService = {
   remove,
 }
 
-function query(entityType: string, delay: number = 500): Promise<Item[]> {
-  const entities: Item[] = JSON.parse(localStorage.getItem(entityType) || '[]')
+function query(entityType: string, delay: number = 500): Promise<Shift[]> {
+  const entities: Shift[] = JSON.parse(localStorage.getItem(entityType) || '[]')
   return new Promise((resolve) => setTimeout(() => resolve(entities), delay))
 }
 
-function get(entityType: string, entityId: string): Promise<Item> {
+function get(entityType: string, entityId: string): Promise<Shift> {
   return query(entityType).then((entities) => {
     const entity = entities.find((entity) => entity._id === entityId)
     if (!entity) {
@@ -35,9 +35,10 @@ function get(entityType: string, entityId: string): Promise<Item> {
   })
 }
 
-function post(entityType: string, newEntity: Item): Promise<Item> {
+function post(entityType: string, newEntity: Shift): Promise<Shift> {
   newEntity = {...newEntity}
   newEntity._id = _makeId()
+  console.log('post  newEntity:', newEntity)
   return query(entityType).then((entities) => {
     entities.push(newEntity)
     _save(entityType, entities)
@@ -45,7 +46,7 @@ function post(entityType: string, newEntity: Item): Promise<Item> {
   })
 }
 
-function put(entityType: string, updatedEntity: Item): Promise<Item> {
+function put(entityType: string, updatedEntity: Shift): Promise<Shift> {
   updatedEntity = JSON.parse(JSON.stringify(updatedEntity))
   return query(entityType).then((entities) => {
     const idx = entities.findIndex((entity) => entity._id === updatedEntity._id)
@@ -73,7 +74,7 @@ function remove(entityType: string, entityId: string): Promise<void> {
 
 // Private functions
 
-function _save(entityType: string, entities: Item[]): void {
+function _save(entityType: string, entities: Shift[]): void {
   localStorage.setItem(entityType, JSON.stringify(entities))
 }
 

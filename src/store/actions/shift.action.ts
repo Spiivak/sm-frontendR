@@ -1,84 +1,59 @@
-import { Shift } from "../../services/shift.service"
+import { Shift, shiftService } from '../../services/shift.service'
+import { ADD_SHIFT, REMOVE_SHIFT, SET_SHIFT, SET_SHIFTS, SetShiftsAction, UPDATE_SHIFT } from '../reducers/shift.reducer'
+import { store } from '../store'
 
-// Action Types
-export const SET_SHIFTS = 'SET_SHIFTS'
-export const SET_SHIFT = 'SET_SHIFT'
-export const REMOVE_SHIFT = 'REMOVE_SHIFT'
-export const ADD_SHIFT = 'ADD_SHIFT'
-export const UPDATE_SHIFT = 'UPDATE_SHIFT'
 
-// Action Interfaces
-export interface SetShiftsAction {
-  type: typeof SET_SHIFTS
-  shifts: Shift[]
-}
-
-export interface SetShiftAction {
-  type: typeof SET_SHIFT
-  shift: Shift
-}
-
-interface RemoveShiftAction {
-  type: typeof REMOVE_SHIFT
-  shiftId: string
-}
-
-interface AddShiftAction {
-  type: typeof ADD_SHIFT
-  shift: Shift
-}
-
-interface UpdateShiftAction {
-  type: typeof UPDATE_SHIFT
-  shift: Shift
-}
-
-type ShiftActionTypes =
-  | SetShiftsAction
-  | SetShiftAction
-  | RemoveShiftAction
-  | AddShiftAction
-  | UpdateShiftAction
-
-// State Type
-interface ShiftState {
-  shifts: Shift[]
-  selectedShift: Shift
-}
-
-// Initial State
-const initialState: ShiftState = {
-  shifts: [],
-  selectedShift: {} as Shift,
-}
-
-// Reducer
-export function shiftReducer(state = initialState, action: ShiftActionTypes): ShiftState {
-  switch (action.type) {
-    case SET_SHIFTS:
-      return { ...state, shifts: [...action.shifts] }
-
-    case SET_SHIFT:
-      const updatedShiftsSet = state.shifts.map((shift) =>
-        shift._id !== action.shift._id ? shift : action.shift
-      )
-      return { ...state, shifts: [...updatedShiftsSet], selectedShift: action.shift }
-
-    case ADD_SHIFT:
-      return { ...state, shifts: [...state.shifts, action.shift] }
-
-    case REMOVE_SHIFT:
-      const updateShiftsRemove = state.shifts.filter((shift) => shift._id !== action.shiftId)
-      return { ...state, shifts: [...updateShiftsRemove] }
-
-    case UPDATE_SHIFT:
-      const updatedShiftsUpdate = state.shifts.map((shift) =>
-        shift._id === action.shift._id ? action.shift : shift
-      )
-      return { ...state, shifts: [...updatedShiftsUpdate], selectedShift: action.shift }
-
-    default:
-      return state
+export async function loadShifts(){
+  try {
+    const shifts = await shiftService.query()
+    store.dispatch({ type: SET_SHIFTS, shifts } as SetShiftsAction)
+    return shifts
+  } catch (err) {
+    console.error('Shifts Actions: Cannot load Shifts =>', err)
+    throw err
   }
 }
 
+export async function loadShift(shiftId: string): Promise<void>{
+  // ! When moving to MongoDB, I need to update type string to type ObjectId
+  try {
+    const shift = await shiftService.getById(shiftId)
+    store.dispatch({ type: SET_SHIFT, shift })
+  } catch (err) {
+    console.error('Shifts Actions: Cannot load Shift =>', err)
+  }
+}
+
+export async function saveShift(shift: Shift): Promise<Shift>{
+  const type = shift._id ? UPDATE_SHIFT : ADD_SHIFT;
+  const errType = shift._id ? 'Update' : 'Add';
+  try {
+    const shiftToSave: Shift = await shiftService.save(shift);
+    store.dispatch({ type, shift: shiftToSave });
+    return shiftToSave;
+  } catch (err) {
+    console.error(`Shifts Actions: Cannot ${errType} Shift =>`, err);
+    throw err;
+  }
+}
+
+export async function removeShift(shiftId: string): Promise<void> {
+  try {
+    await shiftService.remove(shiftId)
+    store.dispatch({ type: REMOVE_SHIFT, shiftId })
+  } catch (err) {
+    console.error('Shifts Actions: Cannot remove shift =>', err)
+    throw err
+  } finally {
+  }
+}
+
+export async function updateShifts(shifts: Shift[]): Promise<void> {
+  try {
+    const updateShifts = await shiftService.updateShifts(shifts)
+    store.dispatch({ type: SET_SHIFTS, shifts: updateShifts })
+  } catch (err) {
+    console.error('Shifts Actions: Cannot Update Shifts =>', err)
+    throw err
+  }
+}

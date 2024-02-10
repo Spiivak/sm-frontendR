@@ -10,27 +10,27 @@ export const UPDATE_SHIFT = 'UPDATE_SHIFT'
 // Action Interfaces
 export interface SetShiftsAction {
   type: typeof SET_SHIFTS
-  resources: Shift[]
+  shifts: Shift[]
 }
 
 export interface SetShiftAction {
   type: typeof SET_SHIFT
-  resource: Shift
+  shift: Shift
 }
 
 interface RemoveShiftAction {
   type: typeof REMOVE_SHIFT
-  resourceId: string
+  shiftId: string
 }
 
 interface AddShiftAction {
   type: typeof ADD_SHIFT
-  resource: Shift
+  shift: Shift
 }
 
 interface UpdateShiftAction {
   type: typeof UPDATE_SHIFT
-  resource: Shift
+  shift: Shift
 }
 
 type ShiftActionTypes =
@@ -42,40 +42,40 @@ type ShiftActionTypes =
 
 // State Type
 interface ShiftState {
-  resources: Shift[]
+  shifts: Shift[]
   selectedShift: Shift
 }
 
 // Initial State
 const initialState: ShiftState = {
-  resources: [],
+  shifts: [],
   selectedShift: {} as Shift,
 }
 
 // Reducer
-export function resourceReducer(state = initialState, action: ShiftActionTypes): ShiftState {
+export function shiftReducer(state = initialState, action: ShiftActionTypes): ShiftState {
   switch (action.type) {
     case SET_SHIFTS:
-      return { ...state, resources: [...action.resources] }
+      return { ...state, shifts: [...action.shifts] }
 
     case SET_SHIFT:
-      const updatedShiftsSet = state.resources.map((resource) =>
-        resource._id !== action.resource._id ? resource : action.resource
+      const updatedShiftsSet = state.shifts.map((shift) =>
+        shift._id !== action.shift._id ? shift : action.shift
       )
-      return { ...state, resources: [...updatedShiftsSet], selectedShift: action.resource }
+      return { ...state, shifts: [...updatedShiftsSet], selectedShift: action.shift }
 
     case ADD_SHIFT:
-      return { ...state, resources: [...state.resources, action.resource] }
+      return { ...state, shifts: [...state.shifts, action.shift] }
 
     case REMOVE_SHIFT:
-      const updateShiftsRemove = state.resources.filter((resource) => resource._id !== action.resourceId)
-      return { ...state, resources: [...updateShiftsRemove] }
+      const updateShiftsRemove = state.shifts.filter((shift) => shift._id !== action.shiftId)
+      return { ...state, shifts: [...updateShiftsRemove] }
 
     case UPDATE_SHIFT:
-      const updatedShiftsUpdate = state.resources.map((resource) =>
-        resource._id === action.resource._id ? action.resource : resource
+      const updatedShiftsUpdate = state.shifts.map((shift) =>
+        shift._id === action.shift._id ? action.shift : shift
       )
-      return { ...state, resources: [...updatedShiftsUpdate], selectedShift: action.resource }
+      return { ...state, shifts: [...updatedShiftsUpdate], selectedShift: action.shift }
 
     default:
       return state
