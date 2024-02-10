@@ -1,141 +1,175 @@
 import { storageService } from "./async.storage.service"
+import { utilService } from "./util.service"
 
-const KEY = 'shifts'
+const STORAGE_KEY = 'shiftsDB'
 
 export const shiftService = {
-    query,
-    get,
-    remove,
-    save,
-    getEmptyShift,
+  query,
+  save,
+  remove,
+  getById,
+  updateShifts,
+  getEmptyShift,
 }
 
-_createDefaultShifts()
+_createShifts()
 
-async function query() {
-    var shifts: any = await storageService.query(KEY)
+ function query() {
+  return storageService.query(STORAGE_KEY)
+  // return httpService.get(PRODUCT_URL)
+}
 
-    console.log(shifts)
-    if (!shifts || !shifts.length) {
-        shifts = _createDefaultShifts()
-        await storageService.post(KEY, shifts)
+async function getById(shiftId: string){
+  // return httpService.get(PRODUCT_URL + resourceId)
+  return storageService.get(STORAGE_KEY, shiftId)
+}
+
+async function remove(shiftId: string) {
+  return await storageService.remove(STORAGE_KEY, shiftId)
+}
+
+async function save(shift: Shift): Promise<Shift> {
+  try {
+    if (shift._id) {
+      return storageService.put(STORAGE_KEY, shift)
+      // await httpService.put(PRODUCT_URL, shift)
+    } else {
+      return storageService.post(STORAGE_KEY, shift)
+      // await httpService.post(PRODUCT_URL, shift)
     }
-    return shifts
+  } catch (error: any) {
+    throw new Error(error.message || 'An error occurred while saving the shift')
+  }
 }
 
-async function get(id:string) {
-    return await storageService.get(KEY, id)
+function updateShifts(shifts: Shift[]) {
+  return Promise.all(shifts.map(shift => storageService.post(STORAGE_KEY, shift)))
+  // return httpService.put(PRODUCT_URL + 'resources/', resources)
 }
 
-async function remove(id:string) {
-    return await storageService.remove(KEY, id)
+function getEmptyShift(): Shift {
+  return {
+    _id: '',
+    date: {
+      from: 0,
+      to: 0,
+    },
+    time: {
+      from: 0,
+      to: 0,
+    },
+    rate: 0,
+    tip: 0,
+    removal: 0,
+    note: '',
+  }
 }
 
-async function save(shift: any): Promise<any> {
-    if (shift._id) return await storageService.put(KEY, shift)
-    else return await storageService.post(KEY, shift)
-}
+async function _createShifts() {
+  let shifts: Shift[] = utilService.loadFromStorage(STORAGE_KEY);
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
 
-function getEmptyShift() {
-    return {
-        vendor: '',
-        speed: 0,
-    }
-}
-
-function _createDefaultShifts(): Shift[] {
-    const shifts: Shift[] = [];
-    const month = new Date().getMonth(); // Get the current month
-
-    // Create 4 random shifts for demonstration purposes
-    for (let i = 0; i < 4; i++) {
-        // Generate random job name and rate
-        const jobName = _getRandomJobName();
-        const rate = _getRandomRate();
-
-        // Generate random dates within the same month
-        const fromDate = _getRandomDate(month);
-        const toDate = _getRandomDate(month);
-
-        const shift: Shift = {
-            _id: '',
-            date: {
-                from: fromDate,
-                to: toDate,
-            },
-            time: {
-                from: 0,
-                to: 0,
-            },
-            rate: rate,
-            tip: 0,
-            removal: 0,
-            note: '',
-        };
-
-        shifts.push(shift);
+  if (!shifts || !shifts.length) {
+    shifts = [];
+    for (let i = 0; i < 10; i++) {
+      shifts.push(
+        _createShift({
+          date: {
+            from: _getRandomDate(currentMonth),
+            to: _getRandomDate(currentMonth),
+          },
+          time: {
+            from: _getRandomTime(),
+            to: _getRandomTime(),
+          },
+          rate: _getRandomRate(),
+          tip: 0,
+          removal: 0,
+          note: '',
+        })
+      );
     }
 
-    return shifts;
+    await utilService.saveToStorage(STORAGE_KEY, shifts);
+  }
+}
+
+function _createShift(options: Partial<Shift>): Shift {
+  
+  return {
+    _id: options._id || utilService.makeId(),
+    date: options.date || { from: 0, to: 0 },
+    time: options.time || { from: 0, to: 0 },
+    rate: options.rate || 0,
+    tip: options.tip || 0,
+    removal: options.removal || 0,
+    note: options.note || '',
+  };
 }
 
 
 interface DateRange {
-    from: number;
-    to: number;
+  from: number;
+  to: number;
 }
 
 interface TimeRange {
-    from: number;
-    to: number;
+  from: number;
+  to: number;
 }
 
 interface ShiftLeave {
-    date: DateRange;
+  date: DateRange;
 }
 
 interface ShiftSickness {
-    date: DateRange;
+  date: DateRange;
 }
 
 export interface Shift {
-    _id: string,
-    date: DateRange;
-    time: TimeRange;
-    rate: number;
-    tip: number;
-    removal: number;
-    note: string;
-    shiftOff?: ShiftLeave;
-    shiftSick?: ShiftSickness;
+  _id: string,
+  date: DateRange;
+  time: TimeRange;
+  rate: number;
+  tip: number;
+  removal: number;
+  note: string;
+  shiftOff?: ShiftLeave;
+  shiftSick?: ShiftSickness;
 }
 
 interface Job {
-    _id: string
-    name: string;
-    shifts: Shift[];
+  _id: string
+  name: string;
+  shifts: Shift[];
 }
 
 
 function _getRandomJobName(): string {
-    // Define an array of random job names
-    const jobNames = ['audi', 'fiat', 'honda', 'suzuki'];
-    // Generate a random index to select a job name from the array
-    const randomIndex = Math.floor(Math.random() * jobNames.length);
-    // Return the randomly selected job name
-    return jobNames[randomIndex];
+  // Define an array of random job names
+  const jobNames = ['audi', 'fiat', 'honda', 'suzuki'];
+  // Generate a random index to select a job name from the array
+  const randomIndex = Math.floor(Math.random() * jobNames.length);
+  // Return the randomly selected job name
+  return jobNames[randomIndex];
 }
 
 function _getRandomRate(): number {
-    // Generate a random rate between 50 and 150
-    return Math.floor(Math.random() * (150 - 50 + 1)) + 50;
+  // Generate a random rate between 50 and 150
+  return Math.floor(Math.random() * (150 - 50 + 1)) + 50;
 }
 
 function _getRandomDate(month: number): number {
-    // Get the current year
-    const year = new Date().getFullYear();
-    // Generate a random day within the month (1 to 28 for simplicity)
-    const day = Math.floor(Math.random() * 28) + 1;
-    // Return the date as milliseconds since January 1, 1970
-    return new Date(year, month, day).getTime();
+  // Get the current year
+  const year = new Date().getFullYear();
+  // Generate a random day within the month (1 to 28 for simplicity)
+  const day = Math.floor(Math.random() * 28) + 1;
+  // Return the date as milliseconds since January 1, 1970
+  return new Date(year, month, day).getTime();
+}
+
+function _getRandomTime(): number {
+  // Generate a random time between 8:00 AM (28800000 milliseconds) and 8:00 PM (72000000 milliseconds)
+  return Math.floor(Math.random() * (72000000 - 28800000 + 1)) + 28800000;
 }
