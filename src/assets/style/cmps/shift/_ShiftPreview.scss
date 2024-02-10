@@ -1,0 +1,38 @@
+.shift-preview {
+  min-height: 88px;
+  border-bottom: 1px solid #303746;
+  cursor: pointer;
+  padding: 16px;
+  .date-circle {
+    margin-right: 16px;
+    padding: 12px;
+    width: rem(56px);
+    height: rem(56px);
+    border-radius: 100%;
+    border: 1px solid $primary-clr;
+
+    p {
+      color: $primary-clr;
+      font-size: rem(14px);
+    }
+
+    span {
+      color: $text-clr;
+      font-size: rem(12px);
+    }
+  }
+
+  .time {
+    span {
+      color: $text-clr;
+    }
+  }
+
+  .more-info {
+    color: darkenColor($text-clr, 50%);
+  }
+
+  &.highlight {
+    background-color: darkenColor($color: $main-app, $amount: 5%);
+  }
+}

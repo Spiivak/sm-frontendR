@@ -1,40 +1,47 @@
-import { Shift } from '../services/shift.service';
+import { Shift } from '../services/shift.service'
+import { shiftService } from '../services/shift.service'
 
 interface ProductPreviewProps {
-  shift: Shift;
-  onRemoveShift: (shiftId: string) => void;
-  onEditShift: (shift: Shift) => void;
+  shift: Shift
+  onRemoveShift: (shiftId: string) => void
+  onEditShift: (shift: Shift) => void
 }
 
 export function ShiftPreview({ shift }: ProductPreviewProps) {
-  console.log('ShiftPreview  shift:', shift)
-
-  // Convert timestamp to a Date object
-  const fromDate = new Date(shift?.date?.from);
-  const toDate = new Date(shift?.date?.to);
-
-  // Get day and month
-  const fromDay = fromDate.getDate();
-  const fromMonth = fromDate.getMonth() + 1; // Month is zero-indexed
-
-  const toDayName = toDate.toLocaleDateString('en-US', { weekday: 'short' }); // Get the day name, e.g., "Wed"
 
 
+  const { day: fromDay, month: fromMonth, dayName: toDayName } = shiftService.formatDate(shift.date.from)
 
 
+  const isToday = shiftService.isDateToday(new Date(shift.date.from))
+
+
+  const { fromHours, fromMinutes, toHours, toMinutes } = shiftService.extractTimeComponents(shift.times)
+
+
+  const totalHours = shiftService.calculateTotalHours(shift)
+  const totalEarned = shiftService.calculateTotalEarned(shift)
+  
   return (
-    <section className='shift-preview'>
-      <div className="date-circle flex column justify-center">
+    <div className={`shift-preview flex align-center ${isToday ? 'highlight' : ''}`}>
+      <div className="date-circle flex column align-center justify-center">
         <p>{fromDay}/{fromMonth}</p>
         <span>{toDayName}</span>
       </div>
-      <div className="shift-information">
-        <div className="time"></div>
-        <div className="more-info">
-          <span className="total-hours"></span>
-          <span className="total-earned"></span>
+      <div className="shift-information flex column">
+        <div className="time flex column">
+          {shift.times.map((timeEntry, index) => (
+            <span key={index} className='flex gap8'>
+              <span className='from'>From - {fromHours[index]}:{fromMinutes[index]}</span>
+              <span className='to'>To - {toHours[index]}:{toMinutes[index]}</span>
+            </span>
+          ))}
+        </div>
+        <div className="more-info flex gap16">
+          <span className="total-hours">{totalHours.toFixed(2)} hours</span>
+          <span className="total-earned">₪{totalEarned.toFixed(2)}</span>
         </div>
       </div>
-    </section>
-  );
+    </div>
+  )
 }
