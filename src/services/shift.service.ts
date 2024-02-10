@@ -10,6 +10,11 @@ export const shiftService = {
   getById,
   updateShifts,
   getEmptyShift,
+  calculateTotalHours,
+  calculateTotalEarned,
+  isDateToday,
+  extractTimeComponents,
+  formatDate
 }
 
 _createShifts()
@@ -54,10 +59,7 @@ function getEmptyShift(): Shift {
       from: 0,
       to: 0,
     },
-    time: {
-      from: 0,
-      to: 0,
-    },
+    times: [],
     rate: 0,
     hourlyRate: 0,
     tip: 0,
@@ -80,10 +82,13 @@ async function _createShifts() {
             from: _getRandomDate(currentMonth),
             to: _getRandomDate(currentMonth),
           },
-          time: {
+          times: [
+            {
             from: _getRandomTime(),
             to: _getRandomTime(),
-          },
+            rate: 100,
+          }
+        ],
           rate: _getRandomRate(),
           tip: 0,
           removal: 0,
@@ -101,7 +106,7 @@ function _createShift(options: Partial<Shift>): Shift {
   return {
     _id: options._id || utilService.makeId(),
     date: options.date || { from: 0, to: 0 },
-    time: options.time || { from: 0, to: 0 },
+    times: options.times || [],
     hourlyRate: options.hourlyRate || 29.96,
     rate: options.rate || 100,
     tip: options.tip || 0,
@@ -116,9 +121,10 @@ interface DateRange {
   to: number;
 }
 
-interface TimeRange {
+interface TimeEntery {
   from: number;
   to: number;
+  rate: number;
 }
 
 interface ShiftLeave {
@@ -132,7 +138,7 @@ interface ShiftSickness {
 export interface Shift {
   _id: string
   date: DateRange
-  time: TimeRange
+  times: TimeEntery[]
   rate: number
   hourlyRate: number
   tip: number
@@ -148,6 +154,73 @@ interface Job {
   shifts: Shift[];
 }
 
+function formatDate(timestamp: number): { day: number; month: number; dayName: string } {
+  const date = new Date(timestamp);
+  return {
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+  };
+}
+
+function extractTimeComponents(timeEntries: { from: number; to: number }[]): { fromHours: string[]; fromMinutes: string[]; toHours: string[]; toMinutes: string[] } {
+  const fromHoursArr: string[] = [];
+  const fromMinutesArr: string[] = [];
+  const toHoursArr: string[] = [];
+  const toMinutesArr: string[] = [];
+
+  timeEntries.forEach(timeEntry => {
+    let fromTime = new Date(timeEntry.from);
+    let toTime = new Date(timeEntry.to);
+
+    if (toTime.getTime() < fromTime.getTime()) {
+      const tempTime = fromTime;
+      fromTime = toTime;
+      toTime = tempTime;
+    }
+
+    fromHoursArr.push(fromTime.getHours().toString().padStart(2, '0'));
+    fromMinutesArr.push(fromTime.getMinutes().toString().padStart(2, '0'));
+    toHoursArr.push(toTime.getHours().toString().padStart(2, '0'));
+    toMinutesArr.push(toTime.getMinutes().toString().padStart(2, '0'));
+  });
+
+  return { fromHours: fromHoursArr, fromMinutes: fromMinutesArr, toHours: toHoursArr, toMinutes: toMinutesArr };
+}
+
+function isDateToday(date: Date): boolean {
+  const today = new Date();
+  return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+}
+
+function calculateTotalHours(shift: Shift): number {
+  let totalHours = 0;
+  shift.times.forEach(timeEntry => {
+    let fromTime = new Date(timeEntry.from);
+    let toTime = new Date(timeEntry.to);
+    if (toTime.getTime() < fromTime.getTime()) {
+      const tempTime = fromTime;
+      fromTime = toTime;
+      toTime = tempTime;
+    }
+    totalHours += (toTime.getTime() - fromTime.getTime()) / (1000 * 60 * 60);
+  });
+  return totalHours;
+}
+
+function calculateTotalEarned(shift: Shift): number {
+  return shift.times.reduce((total, timeEntry) => {
+    let fromTime = new Date(timeEntry.from);
+    let toTime = new Date(timeEntry.to);
+    if (toTime.getTime() < fromTime.getTime()) {
+      const tempTime = fromTime;
+      fromTime = toTime;
+      toTime = tempTime;
+    }
+    const hoursWorked = (toTime.getTime() - fromTime.getTime()) / (1000 * 60 * 60);
+    return total + hoursWorked * shift.hourlyRate;
+  }, 0);
+}
 
 function _getRandomJobName(): string {
   // Define an array of random job names
@@ -166,13 +239,21 @@ function _getRandomRate(): number {
 function _getRandomDate(month: number): number {
   // Get the current year
   const year = new Date().getFullYear();
+  // Get the current month
+  const currentMonth = new Date().getMonth();
   // Generate a random day within the month (1 to 28 for simplicity)
-  const day = Math.floor(Math.random() * 28) + 1;
+  let day = Math.floor(Math.random() * 28) + 1;
+  // If the current month is the provided month, ensure the day is not in the past
+  if (month === currentMonth && day < new Date().getDate()) {
+    day = new Date().getDate();
+  }
   // Return the date as milliseconds since January 1, 1970
   return new Date(year, month, day).getTime();
 }
 
 function _getRandomTime(): number {
   // Generate a random time between 8:00 AM (28800000 milliseconds) and 8:00 PM (72000000 milliseconds)
-  return Math.floor(Math.random() * (72000000 - 28800000 + 1)) + 28800000;
+  const startTime = 8 * 60 * 60 * 1000; // 8:00 AM in milliseconds
+  const endTime = 20 * 60 * 60 * 1000; // 8:00 PM in milliseconds
+  return Math.floor(Math.random() * (endTime - startTime + 1)) + startTime;
 }
