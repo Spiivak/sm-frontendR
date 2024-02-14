@@ -41,12 +41,30 @@ select {
   @include button-style('icon', 'small', 'primary');
 }
 
+.btn-icon.small-secondary {
+  @include button-style('icon', 'small', 'secondary');
+}
+
+
 .btn-icon.medium-primary {
   @include button-style('icon', 'medium', 'primary');
 }
 
+.btn-icon.medium-secondary {
+  @include button-style('icon', 'medium', 'secondary');
+}
+
+.btn-icon.medium-transparent {
+  @include button-style('icon', 'medium', 'transparent');
+}
+
+
 .btn-icon.large-primary {
   @include button-style('icon', 'large', 'primary');
+}
+
+.btn-icon.large-secondary {
+  @include button-style('icon', 'large', 'secondary');
 }
 
 .btn-icon.small-sec {
