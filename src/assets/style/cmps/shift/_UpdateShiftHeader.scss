@@ -1,0 +1,35 @@
+.update-shift-header {
+  .tabs {
+    max-width: 265px;
+    max-height: 31px;
+    background: #141821;
+    border-radius: 4px;
+    margin: 0 auto;
+    margin-top: 35px;
+    border-radius: 4px;
+    position: relative;
+
+    .tab-active {
+      background-color: $primary-clr;
+      border-radius: 4px;
+    }
+
+    .divider {
+      background-color: #ffffff25;
+      position: absolute;
+      width: 1px;
+      height: 15px;
+
+      left: -5px;
+    }
+
+    .tab {
+      position: relative;
+      padding: 8px 16px;
+      color: $text-clr;
+      font-size: 12px;
+      cursor: pointer;
+
+    }
+  }
+}

@@ -1,8 +1,37 @@
-import { useNavigate } from 'react-router-dom'
-import { Shift } from '../../services/shift.service';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom'
+import { Shift, shiftService } from '../../services/shift.service';
 
-export default function UpdateShiftHeader() {
+
+interface Props {
+  setActiveTab: (tabName: string) => void;
+  activeTab: string;
+
+}
+
+export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
   const navigate = useNavigate()
+  const { shiftId } = useParams()
+  const [shift, setShift] = useState<Shift | null>(null)
+
+
+
+  useEffect(() => {
+    loadShift()
+
+  }, [shiftId]);
+
+
+  const loadShift = async () => {
+    if (!shiftId) return;
+    try {
+      const shiftData = await shiftService.getById(shiftId);
+      setShift(shiftData);
+    } catch (error) {
+      console.error('Error loading shift:', error);
+    }
+  }
+
 
   const handleCancel = async () => {
     try {
@@ -40,16 +69,19 @@ export default function UpdateShiftHeader() {
             </button>
       </nav>
       <div className="tabs flex space-between gap8">
-        <div className="tab">
+        <div className={`tab ${activeTab === 'NewShift' ? 'tab-active' : ''}`} onClick={() => setActiveTab('NewShift')}>
           <span>New Shift</span>
         </div>
-        <div className="tab">
+        <div className={`tab ${activeTab === 'DayOff' ? 'tab-active' : ''}`} onClick={() => setActiveTab('DayOff')}>
+        {activeTab !== 'NewShift' && activeTab !== 'DayOff' && <div className="divider"></div>}
           <span>Day off</span>
         </div>
-        <div className="tab">
+        <div className={`tab ${activeTab === 'SickDay' ? 'tab-active' : ''}`} onClick={() => setActiveTab('SickDay')}>
+        {activeTab !== 'DayOff' && activeTab !== 'SickDay' && <div className="divider"></div>}
           <span>Sick day</span>
         </div>
       </div>
+
     </header>
   )
 }

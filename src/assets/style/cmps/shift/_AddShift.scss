@@ -5,12 +5,21 @@
     .action {
       padding: 24px 16px;
       color: $text-clr;
-      min-height: 88px;
+      height: rem(88px);
 
       svg {
         color: $primary-clr;
       }
 
     }
+  }
+
+  input {
+    width: max-content;
+    height: 32px;
+  }
+
+  .note {
+    padding: 16px;
   }
 }
