@@ -7,7 +7,6 @@ import { useEffect } from "react";
 
 export function ShiftIndex() {
   const shifts = useSelector((storeState: any) => storeState.shiftModule.shifts)
-  console.log('ShiftIndex  shifts:', shifts)
 
   useEffect(() => {
     onLoadShifts()

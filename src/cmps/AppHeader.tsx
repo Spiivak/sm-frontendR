@@ -9,9 +9,7 @@ export default function AppHeader() {
     try {
       const shift = await shiftService.getEmptyShift();
       const savedShift = await shiftService.save(shift)
-      console.log('handleNavigate  shift:', shift)
       const shiftId = savedShift._id;
-      console.log('handleNavigate  shiftId:', shiftId)
       navigate(`/${shiftId}/edit`);
     } catch (error) {
       console.error('Error occurred while getting shift ID:', error);

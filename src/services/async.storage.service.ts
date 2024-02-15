@@ -38,7 +38,6 @@ function get(entityType: string, entityId: string): Promise<Shift> {
 function post(entityType: string, newEntity: Shift): Promise<Shift> {
   newEntity = {...newEntity}
   newEntity._id = _makeId()
-  console.log('post  newEntity:', newEntity)
   return query(entityType).then((entities) => {
     entities.push(newEntity)
     _save(entityType, entities)

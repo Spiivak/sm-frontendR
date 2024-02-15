@@ -5,9 +5,6 @@ export const useForm = (initialState: any) => {
 
     function handleChange({ target }: any, fieldType: string) {
         let { value, name: field, type, checked } = target
-        console.log('handleChange  type:', type)
-        console.log('handleChange  field:', field)
-        console.log('handleChange  typeof value:', value)
     
         switch (type) {
             case 'number':
@@ -34,7 +31,6 @@ export const useForm = (initialState: any) => {
             case 'date':
                 // Convert the date value to a timestamp
                 const timestamp = Date.parse(value)
-                console.log('handleChange  timestamp:', timestamp)
                 setFields((prevFields: any) => ({
                     ...prevFields,
                     date: { ...prevFields.date, [field]: timestamp }
