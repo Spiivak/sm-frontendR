@@ -19,12 +19,12 @@ export const shiftService = {
 
 _createShifts()
 
- function query() {
+function query() {
   return storageService.query(STORAGE_KEY)
   // return httpService.get(PRODUCT_URL)
 }
 
-async function getById(shiftId: string){
+async function getById(shiftId: string) {
   // return httpService.get(PRODUCT_URL + resourceId)
   return storageService.get(STORAGE_KEY, shiftId)
 }
@@ -36,11 +36,9 @@ async function remove(shiftId: string) {
 async function save(shift: Shift): Promise<Shift> {
   try {
     if (shift._id) {
-      return storageService.put(STORAGE_KEY, shift)
-      // await httpService.put(PRODUCT_URL, shift)
+      return storageService.put(STORAGE_KEY, shift);
     } else {
-      return storageService.post(STORAGE_KEY, shift)
-      // await httpService.post(PRODUCT_URL, shift)
+      return storageService.post(STORAGE_KEY, shift);
     }
   } catch (error: any) {
     throw new Error(error.message || 'An error occurred while saving the shift')
@@ -55,16 +53,16 @@ function updateShifts(shifts: Shift[]) {
 function getEmptyShift(): Shift {
   return {
     _id: '',
+    type: '',
     date: {
       from: Date.now(),
       to: Date.now(),
     },
-    times: [
-     { from: Date.now(),
+    time: {
+      from: Date.now(),
       to: Date.now(),
-      rate: 100,}
-    ],
-    rate: 100,
+      rate: 100,
+    },
     hourlyRate: 29.96,
     tip: 0,
     removal: 0,
@@ -86,14 +84,14 @@ async function _createShifts() {
             from: _getRandomDate(currentMonth),
             to: _getRandomDate(currentMonth),
           },
-          times: [
-            {
+          time:
+          {
             from: _getRandomTime(),
             to: _getRandomTime(),
             rate: 100,
           }
-        ],
-          rate: _getRandomRate(),
+          ,
+          hourlyRate: 29.96,
           tip: 0,
           removal: 0,
           note: '',
@@ -106,13 +104,13 @@ async function _createShifts() {
 }
 
 function _createShift(options: Partial<Shift>): Shift {
-  
+
   return {
     _id: options._id || utilService.makeId(),
+    type: options.type || 'normal',
     date: options.date || { from: 0, to: 0 },
-    times: options.times || [],
-    hourlyRate: options.hourlyRate || 29.96,
-    rate: options.rate || 100,
+    time: options.time || { from: 0, to: 0, rate: 100 },
+    hourlyRate: 29.96,
     tip: options.tip || 0,
     removal: options.removal || 0,
     note: options.note || '',
@@ -139,15 +137,16 @@ interface ShiftSickness {
   date: DateRange;
 }
 
+
 export interface Shift {
-  _id: string
   date: DateRange
-  times: TimeEntery[]
-  rate: number
   hourlyRate: number
-  tip: number
-  removal: number
-  note: string
+  type: string
+  removal?: number
+  time?: TimeEntery | undefined
+  tip?: number
+  _id?: string
+  note?: string
   shiftOff?: ShiftLeave
   shiftSick?: ShiftSickness
 }
@@ -155,17 +154,21 @@ export interface Shift {
 interface Job {
   _id: string
   name: string;
+  description?: string
   shifts: Shift[];
 }
 
-function formatDate(timestamp: number): { day: number; month: number; dayName: string } {
+function formatDate(timestamp: number): { day: string; month: string; dayName: string } {
   const date = new Date(timestamp);
+  const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if necessary
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
   return {
-    day: date.getDate(),
-    month: date.getMonth() + 1,
+    day,
+    month,
     dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
   };
 }
+
 
 function extractTimeComponents(timeEntries: { from: number; to: number }[]): { fromHours: string[]; fromMinutes: string[]; toHours: string[]; toMinutes: string[] } {
   const fromHoursArr: string[] = [];
@@ -197,48 +200,40 @@ function isDateToday(date: Date): boolean {
   return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
 }
 
-function calculateTotalHours(shift: Shift): number {
-  let totalHours = 0;
-  shift.times.forEach(timeEntry => {
-    let fromTime = new Date(timeEntry.from);
-    let toTime = new Date(timeEntry.to);
-    if (toTime.getTime() < fromTime.getTime()) {
-      const tempTime = fromTime;
-      fromTime = toTime;
-      toTime = tempTime;
-    }
-    totalHours += (toTime.getTime() - fromTime.getTime()) / (1000 * 60 * 60);
-  });
-  return totalHours;
+function calculateTotalHours(shift: Shift): string | undefined {
+  if (!shift.time) return
+
+  const fromTime = new Date(shift.time.from);
+  const toTime = new Date(shift.time.to);
+
+  // Check if 'to' time is before 'from' time (for overnight shifts)
+  if (toTime.getTime() < fromTime.getTime()) {
+    // Adjust 'to' time to the next day
+    toTime.setDate(toTime.getDate() + 1);
+  }
+
+  const millisecondsDifference = toTime.getTime() - fromTime.getTime();
+  const totalHours = Math.floor(millisecondsDifference / (1000 * 60 * 60)); // Total hours
+  const totalMinutes = Math.floor((millisecondsDifference % (1000 * 60 * 60)) / (1000 * 60)); // Total minutes
+
+  return `${totalHours}:${totalMinutes.toString().padStart(2, '0')}`;
+}
+function calculateTotalEarned(shift: Shift): number | undefined {
+  if (!shift.time) return
+
+  const fromTime = new Date(shift.time.from);
+  const toTime = new Date(shift.time.to);
+
+  // Check if 'to' time is before 'from' time (for overnight shifts)
+  if (toTime.getTime() < fromTime.getTime()) {
+    // Adjust 'to' time to the next day
+    toTime.setDate(toTime.getDate() + 1);
+  }
+
+  const hoursWorked = (toTime.getTime() - fromTime.getTime()) / (1000 * 60 * 60);
+  return hoursWorked * shift.hourlyRate;
 }
 
-function calculateTotalEarned(shift: Shift): number {
-  return shift.times.reduce((total, timeEntry) => {
-    let fromTime = new Date(timeEntry.from);
-    let toTime = new Date(timeEntry.to);
-    if (toTime.getTime() < fromTime.getTime()) {
-      const tempTime = fromTime;
-      fromTime = toTime;
-      toTime = tempTime;
-    }
-    const hoursWorked = (toTime.getTime() - fromTime.getTime()) / (1000 * 60 * 60);
-    return total + hoursWorked * shift.hourlyRate;
-  }, 0);
-}
-
-function _getRandomJobName(): string {
-  // Define an array of random job names
-  const jobNames = ['audi', 'fiat', 'honda', 'suzuki'];
-  // Generate a random index to select a job name from the array
-  const randomIndex = Math.floor(Math.random() * jobNames.length);
-  // Return the randomly selected job name
-  return jobNames[randomIndex];
-}
-
-function _getRandomRate(): number {
-  // Generate a random rate between 50 and 150
-  return Math.floor(Math.random() * (150 - 50 + 1)) + 50;
-}
 
 function _getRandomDate(month: number): number {
   // Get the current year
