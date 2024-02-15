@@ -16,7 +16,9 @@ export function ShiftPreview({ shift }: ProductPreviewProps) {
   const isToday = shiftService.isDateToday(new Date(shift.date.from))
 
 
-  const { fromHours, fromMinutes, toHours, toMinutes } = shiftService.extractTimeComponents(shift.times)
+  const { fromHours, fromMinutes, toHours, toMinutes } = shift.time
+    ? shiftService.extractTimeComponents([shift.time])
+    : { fromHours: [], fromMinutes: [], toHours: [], toMinutes: [] };
 
 
   const totalHours = shiftService.calculateTotalHours(shift)
@@ -30,16 +32,14 @@ export function ShiftPreview({ shift }: ProductPreviewProps) {
       </div>
       <div className="shift-information flex column">
         <div className="time flex column">
-          {shift.times.map((timeEntry, index) => (
-            <span key={index} className='flex gap8'>
-              <span className='from'>From - {fromHours[index]}:{fromMinutes[index]}</span>
-              <span className='to'>To - {toHours[index]}:{toMinutes[index]}</span>
-            </span>
-          ))}
+          <span className='flex gap8'>
+            <span className='from'>From - {fromHours}:{fromMinutes}</span>
+            <span className='to'>To - {toHours}:{toMinutes}</span>
+          </span>
         </div>
         <div className="more-info flex gap16">
-          <span className="total-hours">{totalHours.toFixed(2)} hours</span>
-          <span className="total-earned">₪{totalEarned.toFixed(2)}</span>
+          <span className="total-hours">{totalHours} hours</span>
+          <span className="total-earned">₪{totalEarned?.toFixed(2)}</span>
         </div>
       </div>
     </div>
