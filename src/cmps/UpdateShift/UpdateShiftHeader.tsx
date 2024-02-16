@@ -11,22 +11,23 @@ interface Props {
 
 export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
   const navigate = useNavigate()
-  const { shiftId } = useParams()
+  const { shiftId } = useParams<{ shiftId?: string }>(); // Note the type assertion here
   const [shift, setShift] = useState<Shift | null>(null)
 
 
 
   useEffect(() => {
-    loadShift()
-
+    if (shiftId) {
+      loadShift();
+    }
   }, [shiftId]);
 
 
   const loadShift = async () => {
     if (!shiftId) return;
     try {
-      const shiftData = await shiftService.getById(shiftId);
-      setShift(shiftData);
+      const shiftData = await shiftService.getById(shiftId)!
+      setShift(shiftData)
     } catch (error) {
       console.error('Error loading shift:', error);
     }
@@ -35,9 +36,10 @@ export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
 
   const handleCancel = async () => {
     try {
-      // const shift = await shiftService.getTempShift()
-      // const savedShift = await shiftService.clearTempShift(shift)
-      navigate(`/`);
+      if (shiftId) {
+        await shiftService.remove(shiftId);
+        navigate(`/`);
+      }
     } catch (error) {
       console.error('Error occurred while getting shift ID:', error);
     }
