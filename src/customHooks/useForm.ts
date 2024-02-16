@@ -3,44 +3,48 @@ import { useState } from "react"
 export const useForm = (initialState: any) => {
     const [fields, setFields] = useState(initialState)
 
-    function handleChange({ target }: any, fieldType: string) {
-        let { value, name: field, type, checked } = target
-    
+    function handleChange({ target }: any) {
+        let { value, name: field, type } = target
+
         switch (type) {
             case 'number':
             case 'range':
                 value = +value
                 break
-            case 'checkbox':
-                value = checked
-                break
             case 'time':
-                // Convert the time value into hours and minutes
                 const [hours, minutes] = value.split(':')
-                // Create a new Date object and set the hours and minutes
-                const time = new Date()
+                let time = new Date()
                 time.setHours(Number(hours))
                 time.setMinutes(Number(minutes))
-                // Convert the time to a timestamp in milliseconds
-                value = time.getTime()
-                setFields((prevFields: any) => ({
-                    ...prevFields,
-                    time: { ...prevFields.time, [field]: value }
-                }))
+                let timeValue = time.getTime()
+                if (hours === '00' && type === 'time') {
+                    timeValue += 24 * 60 * 60 * 1000
+                }
+                value = timeValue
                 break
             case 'date':
-                // Convert the date value to a timestamp
-                const timestamp = Date.parse(value)
-                setFields((prevFields: any) => ({
-                    ...prevFields,
-                    date: { ...prevFields.date, [field]: timestamp }
-                }))
+                const [year, month, day] = value.split('-')
+                const date = new Date(Number(year), Number(month) - 1, Number(day))
+                value = date.getTime()
                 break
             default:
                 break
         }
-        setFields((prevFields: any) => ({ ...prevFields, [field]: value }))
-    }
 
-    return [fields, setFields, handleChange]
+        setFields((prevFields: any) => {
+            if (type === 'date' || type === 'time') {
+                const mainField = field.split('.')[0]
+                return {
+                    ...prevFields,
+                    [type]: { ...prevFields[type], [mainField]: value }
+                }
+            } else {
+                return {
+                    ...prevFields,
+                    [field]: value,
+                }
+            }
+        })    }
+
+    return [fields, setFields, handleChange] as const
 }
