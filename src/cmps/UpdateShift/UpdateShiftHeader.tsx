@@ -59,13 +59,13 @@ export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
     <header className='app-header update-shift-header'>
       <nav className="flex align-center space-between">
 
-          <button className='btn-txt medium-primary' onClick={handleCancel}>
+          <button className='btn-txt medium-transparent' onClick={handleCancel}>
             Cancel
           </button>
 
           <h4>Edit Shift</h4>
 
-          <button className="btn-txt medium-primary"
+          <button className="btn-txt medium-transparent"
           onClick={handleSave}>
             Save
             </button>

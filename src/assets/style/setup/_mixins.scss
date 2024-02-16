@@ -110,7 +110,7 @@
     border-radius: 5000px;
   } @else if $button-type == 'text' {
     background-color: transparent;
-    color: $text-clr;
+    color: $primary-clr;
   } @else if $button-type == 'contained' {
     background-color: $bg-color;
     color: $text-clr;
@@ -139,7 +139,7 @@
   // Specific hover effect for text buttons
   @if $button-type == 'text' {
     &:hover {
-      background-color: lighten($bg-color, 40%);
+      background-color: lighten($bg-color, 10%);
     }
   }
 

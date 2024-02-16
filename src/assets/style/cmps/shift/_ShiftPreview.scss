@@ -4,6 +4,13 @@
   border-bottom: 1px solid #303746;
   cursor: pointer;
   padding: 16px;
+  .type-icon {
+    margin-right: 16px;
+    padding: 12px;
+    svg {
+      color: $primary-clr;
+    }
+  }
   .date-circle {
     margin-right: 16px;
     padding: 12px;
@@ -20,6 +27,11 @@
     span {
       color: $text-clr;
       font-size: rem(12px);
+    }
+  }
+  .shift-information {
+    .day-off, .sick-day {
+      color: $text-clr;
     }
   }
 

@@ -1,5 +1,6 @@
 import { Shift } from '../services/shift.service'
 import { shiftService } from '../services/shift.service'
+import { SickIcon, VacationIcon } from './Icons'
 
 interface ProductPreviewProps {
   shift: Shift
@@ -33,6 +34,17 @@ export function ShiftPreview({ shift }: ProductPreviewProps) {
           <span>{toDayName}</span>
         </div>
       }
+      {shift.type === 'dayoff' &&
+        <div className='type-icon'>
+          <VacationIcon />
+        </div>
+      }
+
+      {shift.type === 'sickday' &&
+        <div className='type-icon'>
+          <SickIcon />
+        </div>
+      }
       <div className="shift-information flex column">
         {shift.type === 'normal' &&
           <div className="time flex column">
@@ -42,16 +54,18 @@ export function ShiftPreview({ shift }: ProductPreviewProps) {
             </span>
           </div>
         }
-        {shift.type === 'dayoff' && <div>
-          <span>Day off</span>
-          <span>From {fromDay}/{fromMonth} To {toDay}/{toMonth}</span>
-        </div>}
-        {shift.type === 'sickday' && <div>
-          <span>Sick day</span>
-          <span>From {fromDay}/{fromMonth} To {toDay}/{toMonth}</span>
-        </div>}
+        {shift.type === 'dayoff' &&
+          <div className='day-off flex gap8'>
+            <span>Day off</span>
+            <span>From {fromDay}/{fromMonth} To {toDay}/{toMonth}</span>
+          </div>}
+        {shift.type === 'sickday' &&
+          <div className='sick-day flex gap8'>
+            <span>Sick day</span>
+            <span>From {fromDay}/{fromMonth} To {toDay}/{toMonth}</span>
+          </div>}
         <div className="more-info flex gap16">
-          <span className="total-hours">{totalHours} hours</span>
+          {shift.type === 'normal' && <span className="total-hours">{totalHours} hours</span>}
           <span className="total-earned">₪{totalEarned?.toFixed(2)}</span>
         </div>
       </div>

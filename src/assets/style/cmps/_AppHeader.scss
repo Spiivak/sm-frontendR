@@ -1,5 +1,8 @@
 .app-header {
+  position: sticky;
+  top: 0;
   padding: 16px;
+  box-shadow: 0px 4px 8px 0px #3a3a3a14;
   background-color: $main-app;
   .add-shift {
     color: $primary-clr;
@@ -8,7 +11,6 @@
 
   .job-preview {
     margin-top: 16px;
-
     button {
       background-color: transparent;
       color: $primary-clr;
