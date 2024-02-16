@@ -19,11 +19,15 @@ export const shiftService = {
 
 _createShifts()
 
-function query() {
-  return storageService.query(STORAGE_KEY)
-  // return httpService.get(PRODUCT_URL)
-}
+async function query() {
+  const shifts = await storageService.query(STORAGE_KEY);
+  if (!shifts) return [];
 
+  // Sort shifts by date in descending order
+  shifts.sort((a, b) => b.date.from - a.date.from);
+
+  return shifts;
+}
 async function getById(shiftId: string) {
   // return httpService.get(PRODUCT_URL + resourceId)
   return storageService.get(STORAGE_KEY, shiftId)
@@ -36,9 +40,9 @@ async function remove(shiftId: string) {
 async function save(shift: Shift): Promise<Shift> {
   try {
     if (shift._id) {
-      return storageService.put(STORAGE_KEY, shift);
+      return storageService.put(STORAGE_KEY, shift)
     } else {
-      return storageService.post(STORAGE_KEY, shift);
+      return storageService.post(STORAGE_KEY, shift)
     }
   } catch (error: any) {
     throw new Error(error.message || 'An error occurred while saving the shift')
@@ -51,16 +55,19 @@ function updateShifts(shifts: Shift[]) {
 }
 
 function getEmptyShift(): Shift {
+  const now = Date.now();
+  const eightHoursLater = now + 8 * 60 * 60 * 1000; // 8 hours later
+
   return {
     _id: '',
     type: '',
     date: {
-      from: Date.now(),
-      to: Date.now(),
+      from: now,
+      to: eightHoursLater,
     },
     time: {
-      from: Date.now(),
-      to: Date.now(),
+      from: now,
+      to: eightHoursLater,
       rate: 100,
     },
     hourlyRate: 29.96,
@@ -71,12 +78,12 @@ function getEmptyShift(): Shift {
 }
 
 async function _createShifts() {
-  let shifts: Shift[] = utilService.loadFromStorage(STORAGE_KEY);
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
+  let shifts: Shift[] = utilService.loadFromStorage(STORAGE_KEY)
+  const currentDate = new Date()
+  const currentMonth = currentDate.getMonth()
 
   if (!shifts || !shifts.length) {
-    shifts = [];
+    shifts = []
     for (let i = 0; i < 10; i++) {
       shifts.push(
         _createShift({
@@ -96,10 +103,10 @@ async function _createShifts() {
           removal: 0,
           note: '',
         })
-      );
+      )
     }
 
-    await utilService.saveToStorage(STORAGE_KEY, shifts);
+    await utilService.saveToStorage(STORAGE_KEY, shifts)
   }
 }
 
@@ -114,145 +121,136 @@ function _createShift(options: Partial<Shift>): Shift {
     tip: options.tip || 0,
     removal: options.removal || 0,
     note: options.note || '',
-  };
+  }
 }
 
 
 interface DateRange {
-  from: number;
-  to: number;
+  from: number
+  to: number
 }
 
 interface TimeEntery {
-  from: number;
-  to: number;
-  rate: number;
+  from: number
+  to: number
+  rate: number
 }
-
-interface ShiftLeave {
-  date: DateRange;
-}
-
-interface ShiftSickness {
-  date: DateRange;
-}
-
 
 export interface Shift {
   date: DateRange
-  hourlyRate: number
+  hourlyRate: number // ! MOVE TO JOB IN FUTURE
   type: string
   removal?: number
   time?: TimeEntery | undefined
   tip?: number
   _id?: string
   note?: string
-  shiftOff?: ShiftLeave
-  shiftSick?: ShiftSickness
 }
 
 interface Job {
   _id: string
-  name: string;
+  name: string
   description?: string
-  shifts: Shift[];
+  shifts: Shift[]
 }
 
-function formatDate(timestamp: number): { day: string; month: string; dayName: string } {
-  const date = new Date(timestamp);
-  const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if necessary
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
+function formatDate(timestamp: number): { day: string; month: string ;dayName: string } {
+  const date = new Date(timestamp)
+  const day = String(date.getDate()).padStart(2, '0') // Add leading zero if necessary
+  const month = String(date.getMonth() + 1).padStart(2, '0') // Add leading zero if necessary
   return {
     day,
     month,
     dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
-  };
+  }
 }
 
 
 function extractTimeComponents(timeEntries: { from: number; to: number }[]): { fromHours: string[]; fromMinutes: string[]; toHours: string[]; toMinutes: string[] } {
-  const fromHoursArr: string[] = [];
-  const fromMinutesArr: string[] = [];
-  const toHoursArr: string[] = [];
-  const toMinutesArr: string[] = [];
+  const fromHoursArr: string[] = []
+  const fromMinutesArr: string[] = []
+  const toHoursArr: string[] = []
+  const toMinutesArr: string[] = []
 
   timeEntries.forEach(timeEntry => {
-    let fromTime = new Date(timeEntry.from);
-    let toTime = new Date(timeEntry.to);
+    let fromTime = new Date(timeEntry.from)
+    let toTime = new Date(timeEntry.to)
 
+    // Check if 'to' time is before 'from' time (for overnight shifts)
     if (toTime.getTime() < fromTime.getTime()) {
-      const tempTime = fromTime;
-      fromTime = toTime;
-      toTime = tempTime;
+      // Adjust 'to' time to the next day
+      toTime.setDate(toTime.getDate() + 1)
     }
 
-    fromHoursArr.push(fromTime.getHours().toString().padStart(2, '0'));
-    fromMinutesArr.push(fromTime.getMinutes().toString().padStart(2, '0'));
-    toHoursArr.push(toTime.getHours().toString().padStart(2, '0'));
-    toMinutesArr.push(toTime.getMinutes().toString().padStart(2, '0'));
-  });
+    fromHoursArr.push(fromTime.getHours().toString().padStart(2, '0'))
+    fromMinutesArr.push(fromTime.getMinutes().toString().padStart(2, '0'))
+    toHoursArr.push(toTime.getHours().toString().padStart(2, '0'))
+    toMinutesArr.push(toTime.getMinutes().toString().padStart(2, '0'))
+  })
 
-  return { fromHours: fromHoursArr, fromMinutes: fromMinutesArr, toHours: toHoursArr, toMinutes: toMinutesArr };
+  return { fromHours: fromHoursArr, fromMinutes: fromMinutesArr, toHours: toHoursArr, toMinutes: toMinutesArr }
 }
 
+
 function isDateToday(date: Date): boolean {
-  const today = new Date();
-  return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+  const today = new Date()
+  return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()
 }
 
 function calculateTotalHours(shift: Shift): string | undefined {
   if (!shift.time) return
 
-  const fromTime = new Date(shift.time.from);
-  const toTime = new Date(shift.time.to);
+  const fromTime = new Date(shift.time.from)
+  const toTime = new Date(shift.time.to)
 
   // Check if 'to' time is before 'from' time (for overnight shifts)
   if (toTime.getTime() < fromTime.getTime()) {
     // Adjust 'to' time to the next day
-    toTime.setDate(toTime.getDate() + 1);
+    toTime.setDate(toTime.getDate() + 1)
   }
 
-  const millisecondsDifference = toTime.getTime() - fromTime.getTime();
-  const totalHours = Math.floor(millisecondsDifference / (1000 * 60 * 60)); // Total hours
-  const totalMinutes = Math.floor((millisecondsDifference % (1000 * 60 * 60)) / (1000 * 60)); // Total minutes
+  const millisecondsDifference = toTime.getTime() - fromTime.getTime()
+  const totalHours = Math.floor(millisecondsDifference / (1000 * 60 * 60)) // Total hours
+  const totalMinutes = Math.floor((millisecondsDifference % (1000 * 60 * 60)) / (1000 * 60)) // Total minutes
 
-  return `${totalHours}:${totalMinutes.toString().padStart(2, '0')}`;
+  return `${totalHours}:${totalMinutes.toString().padStart(2, '0')}`
 }
+
 function calculateTotalEarned(shift: Shift): number | undefined {
   if (!shift.time) return
 
-  const fromTime = new Date(shift.time.from);
-  const toTime = new Date(shift.time.to);
+  const fromTime = new Date(shift.time.from)
+  const toTime = new Date(shift.time.to)
 
   // Check if 'to' time is before 'from' time (for overnight shifts)
   if (toTime.getTime() < fromTime.getTime()) {
     // Adjust 'to' time to the next day
-    toTime.setDate(toTime.getDate() + 1);
+    toTime.setDate(toTime.getDate() + 1)
   }
 
-  const hoursWorked = (toTime.getTime() - fromTime.getTime()) / (1000 * 60 * 60);
-  return hoursWorked * shift.hourlyRate;
+  const hoursWorked = (toTime.getTime() - fromTime.getTime()) / (1000 * 60 * 60)
+  return hoursWorked * shift.hourlyRate
 }
 
 
 function _getRandomDate(month: number): number {
   // Get the current year
-  const year = new Date().getFullYear();
+  const year = new Date().getFullYear()
   // Get the current month
-  const currentMonth = new Date().getMonth();
+  const currentMonth = new Date().getMonth()
   // Generate a random day within the month (1 to 28 for simplicity)
-  let day = Math.floor(Math.random() * 28) + 1;
+  let day = Math.floor(Math.random() * 28) + 1
   // If the current month is the provided month, ensure the day is not in the past
   if (month === currentMonth && day < new Date().getDate()) {
-    day = new Date().getDate();
+    day = new Date().getDate()
   }
   // Return the date as milliseconds since January 1, 1970
-  return new Date(year, month, day).getTime();
+  return new Date(year, month, day).getTime()
 }
 
 function _getRandomTime(): number {
   // Generate a random time between 8:00 AM (28800000 milliseconds) and 8:00 PM (72000000 milliseconds)
-  const startTime = 8 * 60 * 60 * 1000; // 8:00 AM in milliseconds
-  const endTime = 20 * 60 * 60 * 1000; // 8:00 PM in milliseconds
-  return Math.floor(Math.random() * (endTime - startTime + 1)) + startTime;
+  const startTime = 8 * 60 * 60 * 1000 // 8:00 AM in milliseconds
+  const endTime = 20 * 60 * 60 * 1000 // 8:00 PM in milliseconds
+  return Math.floor(Math.random() * (endTime - startTime + 1)) + startTime
 }
