@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { EnteryIcon, ExitIcon, RatesIcon, RemovalIcon, TipIcon } from '../Icons';
-import { Shift, shiftService } from '../../services/shift.service';
-import { useForm } from '../../customHooks/useForm';
+import { useEffect, useState } from 'react'
+import { EnteryIcon, ExitIcon, RatesIcon, RemovalIcon, TipIcon } from '../Icons'
+import { Shift, shiftService } from '../../services/shift.service'
+import { useForm } from '../../customHooks/useForm'
 
 interface Props {
- shift: Shift
+  shift: Shift
 }
 
 export default function NewShift({ shift }: Props) {
@@ -12,42 +12,47 @@ export default function NewShift({ shift }: Props) {
   const [fields, setFields, handleChange] = useForm(shiftService.getEmptyShift())
 
 
-
   async function handleUpdateShift() {
-    if (!shift) return;
+    if (!shift) return
 
     const updatedShift = {
       ...shift!,
       time: fields.time,
+      type: 'normal',
       date: fields.date,
       tip: +fields.tip,
       removal: +fields.removal,
-      rate: +fields.time.rate,
+      rate: +fields.time.rate || 100,
       note: fields.note
     }
-
+    
+    console.log('handleUpdateShift  updatedShift:', updatedShift)
     try {
-      setEditedField(null);
-      return await shiftService.save(updatedShift);
+      setEditedField(null)
+      return await shiftService.save(updatedShift)
     } catch (error) {
-      console.error('Error saving shift:', error);
+      console.error('Error saving shift:', error)
     }
   }
 
   const handleEditField = (field: string) => {
-    setEditedField(field);
-  };
+    setEditedField(field)
+  }
 
-  if (!shift) return <div>Loading...</div>;
+  if (!shift) return <div>Loading...</div>
 
-  const { fromHours, fromMinutes, toHours, toMinutes } = shiftService.extractTimeComponents([shift.time]);
-  const { day: fromDay, month: fromMonth } = shiftService.formatDate(shift.date.from);
-  const { day: toDay, month: toMonth } = shiftService.formatDate(shift.date.to);
+  const { fromHours, fromMinutes, toHours, toMinutes } = fields.time
+  ? shiftService.extractTimeComponents([fields.time])
+  : { fromHours: [], fromMinutes: [], toHours: [], toMinutes: [] }
+
+
+  const { day: fromDay, month: fromMonth } = shiftService.formatDate(fields.date.from)
+  const { day: toDay, month: toMonth } = shiftService.formatDate(fields.date.to)
 
   return (
     <section className='new-shift' >
       <div className="actions">
-        <div className="action entery flex align-center space-between">
+        <div className="action entery flex align-center space-between shift-card">
           <div className="placeholder flex align-center gap8">
             <EnteryIcon />
             <span>Entery</span>
@@ -58,28 +63,27 @@ export default function NewShift({ shift }: Props) {
                 <input
                   type="time"
                   name="from"
-                  defaultValue={`${fromHours}:${fromMinutes}` || '00:00'}
+                  defaultValue={`${fromHours}:${fromMinutes}`}
                   onChange={handleChange}
                   onBlur={handleUpdateShift}
-
                 />
                 <input
                   type="date"
                   name="from"
-                  defaultValue={`${new Date().getFullYear()}-${toMonth}-${toDay}`}
+                  defaultValue={`${new Date().getFullYear()}-${fromMonth}-${fromDay}`}
                   onChange={handleChange}
                   onBlur={handleUpdateShift}
                 />
               </div>
             ) : (
               <div className='flex column align-center' onClick={() => handleEditField('entry')}>
-                <span className='time'>{`${fromHours[0]}:${fromMinutes[0]}`}</span>
+                <span className='time'>{`${fromHours}:${fromMinutes}`}</span>
                 <span className='date'>{fromDay}/{fromMonth}</span>
               </div>
             )}
           </form>
         </div>
-        <div className="action exit flex space-between align-center">
+        <div className="action exit flex space-between align-center shift-card">
           <div className="placeholder flex align-center gap8">
             <ExitIcon />
             <span>Exit</span>
@@ -90,15 +94,14 @@ export default function NewShift({ shift }: Props) {
                 <input
                   type="time"
                   name="to"
-                  defaultValue={`${toHours}:${toMinutes}` || '00:00'}
+                  defaultValue={`${toHours}:${toMinutes}`}
                   onChange={handleChange}
                   onBlur={handleUpdateShift}
-
                 />
                 <input
                   type="date"
                   name="to"
-                  defaultValue={`${new Date().getFullYear()}-${fromMonth}-${fromDay}`}
+                  defaultValue={`${new Date().getFullYear()}-${toMonth}-${toDay}`}
                   onChange={handleChange}
                   onBlur={handleUpdateShift}
                 />
@@ -111,7 +114,7 @@ export default function NewShift({ shift }: Props) {
             )}
           </form>
         </div>
-        <div className="action rates flex space-between align-center">
+        <div className="action rates flex space-between align-center shift-card">
           <div className="placeholder flex align-center gap8">
             <RatesIcon />
             <span>Rates</span>
@@ -119,17 +122,17 @@ export default function NewShift({ shift }: Props) {
           {editedField === 'rates' ? (
             <input
               type="number"
-              defaultValue={shift.time.rate || 0}
+              defaultValue={shift.time?.rate || 0}
               name="rate"
               onChange={handleChange}
               onBlur={handleUpdateShift}
             />
           ) : (
-            <span onClick={() => handleEditField('rates')}>{shift.time.rate}%</span>
+            <span onClick={() => handleEditField('rates')}>{fields.time?.rate}%</span>
           )}
         </div>
-        <div className="action tips flex space-between align-center">
-          <div className="placeholder flex align-center gap8">
+        <div className="action tips flex space-between align-center shift-card">
+          <div className="placeholder flex align-center gap8 ">
             <TipIcon />
             <span>Tip</span>
           </div>
@@ -142,10 +145,10 @@ export default function NewShift({ shift }: Props) {
               onBlur={handleUpdateShift}
             />
           ) : (
-            <span onClick={() => handleEditField('tip')}>{shift.tip}</span>
+            <span onClick={() => handleEditField('tip')}>{fields.tip}</span>
           )}
         </div>
-        <div className="action removal flex space-between align-center">
+        <div className="action removal flex space-between align-center shift-card">
           <div className="placeholder flex align-center gap8">
             <RemovalIcon />
             <span>Removal</span>
@@ -153,13 +156,13 @@ export default function NewShift({ shift }: Props) {
           {editedField === 'removal' ? (
             <input
               type="number"
-              defaultValue={fields.removal || 0}
+              defaultValue={fields.removal}
               name="removal"
               onChange={handleChange}
               onBlur={handleUpdateShift}
             />
           ) : (
-            <span onClick={() => handleEditField('removal')}>{shift.removal}</span>
+            <span onClick={() => handleEditField('removal')}>{fields.removal}</span>
           )}
         </div>
       </div>
@@ -167,5 +170,5 @@ export default function NewShift({ shift }: Props) {
         <textarea name="note" id="note" cols={30} rows={10} defaultValue={fields.note || ''} onChange={handleChange} onBlur={handleUpdateShift} placeholder='Something that important to remember?' />
       </div>
     </section>
-  );
+  )
 }
