@@ -9,7 +9,7 @@ interface Props {
 
 export default function NewShift({ shift }: Props) {
   const [editedField, setEditedField] = useState<string | null>(null)
-  const [fields, setFields, handleChange] = useForm(shiftService.getEmptyShift())
+  const [fields, setFields, handleChange] = useForm(shift)
 
 
   async function handleUpdateShift() {
