@@ -11,7 +11,7 @@ interface Props {
 
 export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
   const navigate = useNavigate()
-  const { shiftId } = useParams<{ shiftId?: string }>(); // Note the type assertion here
+  const { shiftId } = useParams<{ shiftId?: string }>()
   const [shift, setShift] = useState<Shift | null>(null)
 
 
@@ -26,7 +26,7 @@ export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
   const loadShift = async () => {
     if (!shiftId) return;
     try {
-      const shiftData = await shiftService.getById(shiftId)!
+      const shiftData = await shiftService.getById(shiftId)
       setShift(shiftData)
     } catch (error) {
       console.error('Error loading shift:', error);
@@ -48,7 +48,8 @@ export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
   const handleSave = async () => {
     try {
       // const shift: Shift = await shiftService.getTempShift()
-      // await shiftService.save(shift)
+      if(!shift) return
+      await shiftService.save(shift)
       navigate(`/`)
     } catch (error) {
       console.error('Error occurred while getting shift ID:', error)
@@ -70,6 +71,7 @@ export default function UpdateShiftHeader({ setActiveTab, activeTab }: Props) {
             Save
             </button>
       </nav>
+      
       <div className="tabs flex space-between gap8">
         <div className={`tab ${activeTab === 'NewShift' ? 'tab-active' : ''}`} onClick={() => setActiveTab('NewShift')}>
           <span>New Shift</span>
