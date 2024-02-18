@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { EnteryIcon, ExitIcon, RatesIcon, RemovalIcon, TipIcon } from '../Icons'
 import { Shift, shiftService } from '../../services/shift.service'
 import { useForm } from '../../customHooks/useForm'
+import { useEffectUpdate } from '../../customHooks/useEffectUpdate'
 
 interface Props {
   shift: Shift
@@ -11,6 +12,10 @@ export default function NewShift({ shift }: Props) {
   const [editedField, setEditedField] = useState<string | null>(null)
   const [fields, setFields, handleChange] = useForm(shift)
 
+
+  useEffect(() => {
+    handleUpdateShift()
+  }, [])
 
   async function handleUpdateShift() {
     if (!shift) return
