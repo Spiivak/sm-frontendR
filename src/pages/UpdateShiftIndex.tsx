@@ -7,6 +7,7 @@ import { Shift, shiftService } from '../services/shift.service';
 import { useParams } from 'react-router-dom';
 
 
+
 export default function UpdateShift() {
   const [activeTab, setActiveTab] = useState<string>('NewShift')
   const { shiftId } = useParams()
@@ -15,7 +16,7 @@ export default function UpdateShift() {
   useEffect(() => {
     loadShift()
 
-  }, [shiftId])
+  }, [shiftId]);
 
 
   const loadShift = async () => {
@@ -35,7 +36,7 @@ export default function UpdateShift() {
     } catch (error) {
       console.error('Error loading shift:', error);
     }
-  };
+  }
 
   return (
     <section className='update-shift-index index'>
