@@ -1,7 +1,7 @@
-import { Shift, shiftService } from '../../services/shift.service';
-import { useForm } from '../../customHooks/useForm';
-import { EnteryIcon, ExitIcon } from '../Icons';
-import { useState } from 'react';
+import { Shift, shiftService } from '../../services/shift.service'
+import { useForm } from '../../customHooks/useForm'
+import { EnteryIcon, ExitIcon } from '../Icons'
+import { useState } from 'react'
 interface Props {
   shift: Shift
 }
@@ -11,16 +11,16 @@ export default function DayOff({ shift }: Props) {
   const [editedField, setEditedField] = useState<string | null>(null)
 
   async function handleUpdateShift() {
-    if (!shift) return;
+    if (!shift) return
   
-    const fromDate = new Date(fields.date.from);
-    const toDate = new Date(fields.date.to);
+    const fromDate = new Date(fields.date.from)
+    const toDate = new Date(fields.date.to)
   
     // Calculate the duration in milliseconds
-    const durationInMilliseconds = toDate.getTime() - fromDate.getTime();
+    const durationInMilliseconds = toDate.getTime() - fromDate.getTime()
   
     // Calculate the total hours
-    const totalHours = durationInMilliseconds / (1000 * 60 * 60);
+    const totalHours = durationInMilliseconds / (1000 * 60 * 60)
   
     const updatedShift = {
       ...shift!,
@@ -31,18 +31,18 @@ export default function DayOff({ shift }: Props) {
         rate: 0
       },
       date: fields.date,
-    };
+    }
   
     try {
-      return await shiftService.save(updatedShift);
+      return await shiftService.save(updatedShift)
     } catch (error) {
-      console.error('Error saving shift:', error);
+      console.error('Error saving shift:', error)
     }
   }
   
 
-  const { day: fromDay, month: fromMonth } = shiftService.formatDate(fields.date.from);
-  const { day: toDay, month: toMonth } = shiftService.formatDate(fields.date.to);
+  const { day: fromDay, month: fromMonth } = shiftService.formatDate(fields.date.from)
+  const { day: toDay, month: toMonth } = shiftService.formatDate(fields.date.to)
 
   return (
     <section className='new-shift' >
