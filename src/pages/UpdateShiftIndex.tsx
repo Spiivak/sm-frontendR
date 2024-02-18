@@ -16,7 +16,7 @@ export default function UpdateShift() {
   useEffect(() => {
     loadShift()
 
-  }, [shiftId]);
+  }, [shiftId])
 
 
   const loadShift = async () => {

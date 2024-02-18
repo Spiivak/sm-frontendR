@@ -9,5 +9,9 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
+
+  .app-bottom-nav {
+    grid-column: 2;
+  }
 }
 

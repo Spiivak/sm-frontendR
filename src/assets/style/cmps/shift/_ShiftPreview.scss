@@ -6,6 +6,8 @@
   padding: 16px;
   .type-icon {
     margin-right: 16px;
+    width: rem(56px);
+    height: rem(56px);
     padding: 12px;
     svg {
       color: $primary-clr;

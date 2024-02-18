@@ -3,6 +3,7 @@ import { Route, Routes, BrowserRouter as Router } from 'react-router-dom'
 import { store } from './store/store'
 import { ShiftIndex } from './pages/ShiftIndex'
 import UpdateShift from './pages/UpdateShiftIndex'
+import AppBottomNav from './cmps/AppBottomNav'
 
 // import './App.css'
 
