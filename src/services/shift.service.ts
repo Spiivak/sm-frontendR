@@ -60,7 +60,7 @@ function getEmptyShift(): Shift {
 
   return {
     _id: '',
-    type: '',
+    type: 'normal',
     date: {
       from: now,
       to: eightHoursLater,
