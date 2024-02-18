@@ -21,11 +21,11 @@ export function ShiftPreview({ shift }: ProductPreviewProps) {
   const renderShiftTypeIcon = () => {
     switch (shift.type) {
       case 'dayoff':
-        return <div className="type-icon">
+        return <div className="type-icon flex align-center justify-center">
           <VacationIcon />
         </div>
       case 'sickday':
-        return (<div className='type-icon'>
+        return (<div className='type-icon flex align-center justify-center'>
           <SickIcon />
         </div>)
       case 'normal':
