@@ -1,0 +1,26 @@
+.app-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  background-color: #141821;
+  width: rem(413px);
+  height: rem(79px);
+  color: #ffffff1d;
+  font-size: 14px;
+
+  ul {
+    gap: 48px;
+    a {
+      gap: 4px;
+    }
+  }
+
+  .active {
+    color: $primary-clr;
+    font-weight: 500;
+  }
+
+  .active svg {
+    color: $primary-clr;
+
+  }
+}

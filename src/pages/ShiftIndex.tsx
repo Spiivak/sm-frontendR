@@ -4,6 +4,7 @@ import { ShiftList } from "../cmps/ShiftList";
 import { Shift } from "../services/shift.service";
 import { loadShifts, removeShift, saveShift } from "../store/actions/shift.action";
 import { useEffect } from "react";
+import AppBottomNav from "../cmps/AppBottomNav";
 
 export function ShiftIndex() {
   const shifts = useSelector((storeState: any) => storeState.shiftModule.shifts)
@@ -51,6 +52,7 @@ export function ShiftIndex() {
       <main>
         <ShiftList shifts={shifts} onRemoveShift={onRemoveShift} onEditShift={onEditShift} />
       </main>
+      <AppBottomNav/>
     </section>
   )
 }
