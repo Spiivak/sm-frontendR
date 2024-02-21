@@ -1,0 +1,73 @@
+.work-index {
+  .header {
+    padding: 32px 64px;
+    background-color: $main-app;
+    box-shadow: 0px 4px 8px 0px #3a3a3a14;
+
+    position: sticky;
+    top: 0;
+    z-index: 40;
+
+    .actions, .title {
+      cursor: pointer;
+    }
+  }
+
+  main {
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 150px);
+      gap: 8px;
+      justify-content: center;
+      margin-top: 48px;
+      margin-block-end: 128px;
+
+      .card {
+        position: relative;
+        cursor: pointer;
+        text-align: center;
+
+        border-radius: 4px;
+        background-color: #141821;
+
+        padding: 16px;
+        min-width: 150px;
+        min-height: 125px;
+
+        .icon {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+
+          div {
+            display: flex;
+            background-color: lighten($color: #141821, $amount: 10);
+            border-radius: 50%;
+            padding: 8px;
+
+            svg {
+              color: $primary-clr;
+            }
+          }
+
+          span {
+            font-size: 14px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+        }
+
+        .label {
+          font-size: 12px;
+          color: darken(white, 50%);
+          align-self: end;
+          position: absolute;
+
+          bottom: 8px;
+          left: 8px;
+        }
+      }
+    }
+  }
+}
