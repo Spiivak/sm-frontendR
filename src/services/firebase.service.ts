@@ -1,12 +1,8 @@
-import { getAnalytics, logEvent } from "firebase/analytics"
-import { initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
 import { CollectionReference, DocumentData, addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, where } from "firebase/firestore"
 
-export const auth = getAuth()
-auth.useDeviceLanguage()
 
-const pageSize = 8
+// const pageSize = 8
 let gLastDocForPaging: Document | null = null;
 
 interface Document {
@@ -26,7 +22,6 @@ declare global {
 
 
 export const firebaseService = {
-  initFirebase,
   getDocuments,
   getDocument,
   addDocument,
@@ -35,28 +30,6 @@ export const firebaseService = {
   subscribe
 }
 
-async function initFirebase() {
-  // Get from Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyCScQuffrtIY1w5M29m1R6PTeAP5yciPM0",
-    authDomain: "shifts-876db.firebaseapp.com",
-    projectId: "shifts-876db",
-    storageBucket: "shifts-876db.appspot.com",
-    messagingSenderId: "165306507820",
-    appId: "1:165306507820:web:b7cacf3ac832b4f0b4a789",
-    measurementId: "G-XHB5PR0PK5"
-  }
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig)
-  const analytics = getAnalytics(app)
-  window.gaLogEvent = (evName: any, value = true) => {
-    logEvent(analytics, evName, {
-      value
-    })
-  }
-  // debug:
-  window.myApp = app
-}
 async function getDb() {
   try {
     const db = getFirestore()
